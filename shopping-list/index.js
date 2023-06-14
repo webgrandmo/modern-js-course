@@ -1,7 +1,8 @@
 const itemForm = document.getElementById('item-form'),
 	itemInput = document.getElementById('item-input'),
 	itemFilter = document.getElementById('filter'),
-	itemList = document.getElementById('item-list');
+	itemList = document.getElementById('item-list'),
+	clearBtn = document.getElementById('clear');
 
 const createHTMLElement = (element, classes) => {
 	const HTMLelement = document.createElement(element);
@@ -13,6 +14,7 @@ const createText = (newItem) => {
 	return document.createTextNode(newItem);
 };
 
+// Add item
 const addItem = (e) => {
 	e.preventDefault();
 	// Validate input
@@ -32,9 +34,66 @@ const addItem = (e) => {
 	button.appendChild(icon);
 	li.appendChild(button);
 	itemList.appendChild(li);
-
+	checkUI();
 	itemInput.value = '';
+};
+
+// Delete item
+const deleteItem = (e) => {
+	if (e.target.classList.contains('fa-xmark')) {
+		if (window.confirm('Are you sure you want to delete')) {
+			e.target.parentElement.parentElement.remove();
+		}
+	}
+	checkUI();
+};
+
+// Clear All Items
+
+const clearItems = (e) => {
+	// const items = document.querySelectorAll('li');
+	// if (e.target.id === 'clear' && items.length > 0) {
+	// 	items.forEach((item) => item.remove());
+	// }
+
+	while (itemList.firstChild) {
+		itemList.removeChild(itemList.firstChild);
+	}
+	checkUI();
+	itemInput.value = '';
+};
+
+// Filter items
+const filterItems = (e) => {
+	const text = e.target.value.toLowerCase(),
+		items = itemList.querySelectorAll('li');
+	items.forEach((item) => {
+		const itemName = item.firstChild.textContent.toLowerCase();
+
+		if (itemName.includes(text)) {
+			item.style.display = 'flex';
+		} else {
+			item.style.display = 'none';
+		}
+	});
+};
+
+// Check on items presents
+
+const checkUI = () => {
+	const items = itemList.querySelectorAll('li');
+	if (!items || items.length === 0) {
+		itemFilter.style.display = 'none';
+		clearBtn.style.display = 'none';
+	} else {
+		itemFilter.style.display = 'block';
+		clearBtn.style.display = 'block';
+	}
 };
 
 // Event Listeners
 itemForm.addEventListener('submit', addItem);
+itemList.addEventListener('click', deleteItem);
+clearBtn.addEventListener('click', clearItems);
+itemFilter.addEventListener('input', filterItems);
+checkUI();
