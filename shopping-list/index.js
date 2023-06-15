@@ -21,7 +21,6 @@ const onAddItemSubmit = (e) => {
 	const newItem = itemInput.value;
 	if (!newItem) {
 		alert('Please fill the input');
-		newItem.style.border = '2px solid red';
 		return;
 	}
 
@@ -44,25 +43,47 @@ const addItemToDOM = (item) => {
 	itemList.appendChild(li);
 };
 
-const addItemToStorage = (item) => {
+const getItemsFromStorage = (item) => {
 	let itemsFromStorage;
 	if (localStorage.getItem('items') === null) {
 		itemsFromStorage = [];
 	} else {
 		itemsFromStorage = JSON.parse(localStorage.getItem('items'));
 	}
+	return itemsFromStorage;
+};
+
+const displayItems = () => {
+	const itemsFromStorage = getItemsFromStorage();
+	itemsFromStorage.forEach((item) => addItemToDOM(item));
+	checkUI();
+};
+
+const addItemToStorage = (item) => {
+	const itemsFromStorage = getItemsFromStorage();
 	itemsFromStorage.push(item);
 	localStorage.setItem('items', JSON.stringify(itemsFromStorage));
 };
 
-// Delete item
-const deleteItem = (e) => {
+const onClickItem = (e) => {
 	if (e.target.classList.contains('fa-xmark')) {
-		if (window.confirm('Are you sure you want to delete')) {
-			e.target.parentElement.parentElement.remove();
-		}
+		deleteItem(e.target.parentElement.parentElement);
 	}
+};
+
+// Delete item
+const deleteItem = (item) => {
+	if (window.confirm('Are you sure you want to delete')) {
+		item.remove();
+	}
+	removeItemFromStorage(item.textContent);
 	checkUI();
+};
+
+const removeItemFromStorage = (item) => {
+	let itemsFromStorage = getItemsFromStorage();
+	itemsFromStorage = itemsFromStorage.filter((i) => i !== item);
+	localStorage.setItem('items', JSON.stringify(itemsFromStorage));
 };
 
 // Clear All Items
@@ -76,6 +97,7 @@ const clearItems = (e) => {
 	while (itemList.firstChild) {
 		itemList.removeChild(itemList.firstChild);
 	}
+	localStorage.clear();
 	checkUI();
 	itemInput.value = '';
 };
@@ -108,9 +130,16 @@ const checkUI = () => {
 	}
 };
 
-// Event Listeners
-itemForm.addEventListener('submit', onAddItemSubmit);
-itemList.addEventListener('click', deleteItem);
-clearBtn.addEventListener('click', clearItems);
-itemFilter.addEventListener('input', filterItems);
-checkUI();
+// Initialize app
+
+const init = () => {
+	// Event Listeners
+	itemForm.addEventListener('submit', onAddItemSubmit);
+	itemList.addEventListener('click', onClickItem);
+	clearBtn.addEventListener('click', clearItems);
+	itemFilter.addEventListener('input', filterItems);
+	document.addEventListener('DOMContentLoaded', displayItems);
+	checkUI();
+};
+
+init();
