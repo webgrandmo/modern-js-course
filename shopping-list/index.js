@@ -15,7 +15,7 @@ const createText = (newItem) => {
 };
 
 // Add item
-const addItem = (e) => {
+const onAddItemSubmit = (e) => {
 	e.preventDefault();
 	// Validate input
 	const newItem = itemInput.value;
@@ -25,17 +25,34 @@ const addItem = (e) => {
 		return;
 	}
 
+	addItemToDOM(newItem);
+	addItemToStorage(newItem);
+
+	checkUI();
+	itemInput.value = '';
+};
+
+const addItemToDOM = (item) => {
 	// Create list item
 	const li = document.createElement('li'),
 		button = createHTMLElement('button', 'remove-item btn-link text-red'),
 		icon = createHTMLElement('i', 'fa-solid fa-xmark'),
-		text = createText(newItem);
+		text = createText(item);
 	li.appendChild(text);
 	button.appendChild(icon);
 	li.appendChild(button);
 	itemList.appendChild(li);
-	checkUI();
-	itemInput.value = '';
+};
+
+const addItemToStorage = (item) => {
+	let itemsFromStorage;
+	if (localStorage.getItem('items') === null) {
+		itemsFromStorage = [];
+	} else {
+		itemsFromStorage = JSON.parse(localStorage.getItem('items'));
+	}
+	itemsFromStorage.push(item);
+	localStorage.setItem('items', JSON.stringify(itemsFromStorage));
 };
 
 // Delete item
@@ -92,7 +109,7 @@ const checkUI = () => {
 };
 
 // Event Listeners
-itemForm.addEventListener('submit', addItem);
+itemForm.addEventListener('submit', onAddItemSubmit);
 itemList.addEventListener('click', deleteItem);
 clearBtn.addEventListener('click', clearItems);
 itemFilter.addEventListener('input', filterItems);
