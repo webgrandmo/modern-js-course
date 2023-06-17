@@ -2,7 +2,9 @@ const itemForm = document.getElementById('item-form'),
 	itemInput = document.getElementById('item-input'),
 	itemFilter = document.getElementById('filter'),
 	itemList = document.getElementById('item-list'),
-	clearBtn = document.getElementById('clear');
+	clearBtn = document.getElementById('clear'),
+	formBtn = itemForm.querySelector('.btn');
+let = isEditMode = false;
 
 const createHTMLElement = (element, classes) => {
 	const HTMLelement = document.createElement(element);
@@ -24,10 +26,20 @@ const onAddItemSubmit = (e) => {
 		return;
 	}
 
+	// Check if edit mode
+	if (isEditMode) {
+		const itemToEdit = itemList.querySelector('.edit-mode');
+
+		removeItemFromStorage(itemToEdit.textContent);
+		itemToEdit.classList.remove('edit-mode');
+		itemToEdit.remove();
+		isEditMode = false;
+	}
+
 	addItemToDOM(newItem);
 	addItemToStorage(newItem);
 
-	checkUI();
+	resetUI();
 	itemInput.value = '';
 };
 
@@ -56,7 +68,7 @@ const getItemsFromStorage = (item) => {
 const displayItems = () => {
 	const itemsFromStorage = getItemsFromStorage();
 	itemsFromStorage.forEach((item) => addItemToDOM(item));
-	checkUI();
+	resetUI();
 };
 
 const addItemToStorage = (item) => {
@@ -68,7 +80,18 @@ const addItemToStorage = (item) => {
 const onClickItem = (e) => {
 	if (e.target.classList.contains('fa-xmark')) {
 		deleteItem(e.target.parentElement.parentElement);
+	} else {
+		setItemToEdit(e.target);
 	}
+};
+
+const setItemToEdit = (item) => {
+	isEditMode = true;
+	itemList.querySelectorAll('li').forEach((item) => item.classList.remove('edit-mode'));
+	item.classList.add('edit-mode');
+	formBtn.innerHTML = '<i class="fa-solid fa-pen"></i> Update Item';
+	formBtn.style.backgroundColor = '#228B22';
+	itemInput.value = item.textContent;
 };
 
 // Delete item
@@ -77,7 +100,7 @@ const deleteItem = (item) => {
 		item.remove();
 	}
 	removeItemFromStorage(item.textContent);
-	checkUI();
+	resetUI();
 };
 
 const removeItemFromStorage = (item) => {
@@ -98,7 +121,7 @@ const clearItems = (e) => {
 		itemList.removeChild(itemList.firstChild);
 	}
 	localStorage.clear();
-	checkUI();
+	resetUI();
 	itemInput.value = '';
 };
 
@@ -119,7 +142,8 @@ const filterItems = (e) => {
 
 // Check on items presents
 
-const checkUI = () => {
+const resetUI = () => {
+	itemInput.value = '';
 	const items = itemList.querySelectorAll('li');
 	if (!items || items.length === 0) {
 		itemFilter.style.display = 'none';
@@ -128,6 +152,10 @@ const checkUI = () => {
 		itemFilter.style.display = 'block';
 		clearBtn.style.display = 'block';
 	}
+
+	isEditMode = false;
+	formBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Add Item';
+	formBtn.style.backgroundColor = '#333';
 };
 
 // Initialize app
@@ -139,7 +167,7 @@ const init = () => {
 	clearBtn.addEventListener('click', clearItems);
 	itemFilter.addEventListener('input', filterItems);
 	document.addEventListener('DOMContentLoaded', displayItems);
-	checkUI();
+	resetUI();
 };
 
 init();
