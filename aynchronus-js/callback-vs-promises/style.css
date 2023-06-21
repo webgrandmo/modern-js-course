@@ -1,0 +1,22 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+section {
+	text-align: center;
+}
+
+ul {
+	list-style-type: none;
+	max-width: 40rem;
+	margin: 1rem auto;
+	text-align: left;
+}
+
+li {
+	background: #e2e2e2;
+	padding: 1rem 1.5rem;
+	border-bottom: 1px solid #c7c7c7;
+}
