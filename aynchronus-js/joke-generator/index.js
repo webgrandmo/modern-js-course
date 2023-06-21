@@ -17,3 +17,4 @@ const getJoke = () => {
 };
 
 jokeBtn.addEventListener('click', getJoke);
+document.addEventListener('DOMContentLoaded', getJoke);
