@@ -28,16 +28,12 @@ const createAndDisplayActors = (data) => {
 	});
 };
 
-getData('./movies.json')
-	.then((movies) => {
-		createAndDisplayActors(movies);
-		return getData('./actors.json');
-	})
-	.then((actors) => {
-		createAndDisplayActors(actors);
-		return getData('./directors.json');
-	})
-	.then((directors) => {
-		createAndDisplayActors(directors);
-	})
-	.catch((error) => console.log(error));
+const movies = getData('./movies.json');
+const actors = getData('./actors.json');
+const directors = getData('./directors.json');
+
+Promise.all([movies, actors, directors]).then((data) => {
+	data.forEach((item) => {
+		createAndDisplayActors(item);
+	});
+});
